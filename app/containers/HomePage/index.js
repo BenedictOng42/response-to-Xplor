@@ -22,7 +22,7 @@ import injectReducer from 'utils/injectReducer';
 import makeSelectHomePage from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-
+import { moveRobot, isValidMove, degreeToDirection } from './movements';
 /* eslint-disable react/prefer-stateless-function */
 export class HomePage extends React.Component {
   constructor(props) {
@@ -32,9 +32,12 @@ export class HomePage extends React.Component {
       listOfValidCommands: [],
       listOfFailedCommands: [],
       ableToAcceptCommands: false,
+      currPos: null,
     };
     this.onChange = this.onChange.bind(this);
     this.onAddCommand = this.onAddCommand.bind(this);
+    this.onInputKeyDown = this.onInputKeyDown.bind(this);
+    this.reportRobotLocation = this.reportRobotLocation.bind(this);
   }
 
   onChange(event) {
@@ -44,35 +47,89 @@ export class HomePage extends React.Component {
 
   async onAddCommand() {
     const { ableToAcceptCommands, command } = this.state;
-    // console.log(command);
-    if (!ableToAcceptCommands) {
-      if (command.toLowerCase() === 'place') {
-        await this.setState(prevState => ({
-          ableToAcceptCommands: true,
-          listOfValidCommands: prevState.listOfValidCommands.concat(command),
-        }));
-      } else {
-        await this.setState(prevState => ({
-          listOfFailedCommands: prevState.listOfFailedCommands.concat(command),
-        }));
+    const commandBreakdown = command.split([' ']);
+    if (!isValidMove(commandBreakdown)) {
+      await this.setState(prevState => ({
+        listOfFailedCommands: prevState.listOfFailedCommands.concat(command),
+      }));
+    } else {
+      if (!ableToAcceptCommands) {
+        if (commandBreakdown[0].toLowerCase() === 'place') {
+          const positions = commandBreakdown[1].split(',');
+          const newPos = moveRobot(
+            {
+              x: parseInt(positions[0], 10),
+              y: parseInt(positions[1], 10),
+              facing: positions[2],
+            },
+            'NONE',
+          );
+          await this.setState(prevState => ({
+            ableToAcceptCommands: true,
+            listOfValidCommands: prevState.listOfValidCommands.concat(command),
+            currPos: newPos,
+          }));
+        } else {
+          await this.setState(prevState => ({
+            listOfFailedCommands: prevState.listOfFailedCommands.concat(
+              command,
+            ),
+          }));
+        }
       }
-    }
-    if (ableToAcceptCommands) {
-      if (command.toLowerCase() === 'report') {
-        await this.setState(prevState => ({
-          ableToAcceptCommands: false,
-          listOfValidCommands: prevState.listOfValidCommands.concat(command),
-        }));
-      } else {
-        await this.setState(prevState => ({
-          listOfValidCommands: prevState.listOfValidCommands.concat(command),
-        }));
+      if (ableToAcceptCommands) {
+        if (commandBreakdown[0].toLowerCase() === 'report') {
+          await this.setState(prevState => ({
+            ableToAcceptCommands: false,
+            listOfValidCommands: prevState.listOfValidCommands.concat(command),
+          }));
+        } else {
+          let newPos;
+          if (commandBreakdown[0].toLowerCase() === 'place') {
+            const positions = commandBreakdown[1].split(',');
+            newPos = moveRobot(
+              {
+                x: parseInt(positions[0], 10),
+                y: parseInt(positions[1], 10),
+                facing: positions[2],
+              },
+              'NONE',
+            );
+          } else {
+            newPos = moveRobot(this.state.currPos, commandBreakdown[0]);
+          }
+          if (newPos.valid) {
+            await this.setState(prevState => ({
+              listOfValidCommands: prevState.listOfValidCommands.concat(
+                command,
+              ),
+              currPos: newPos,
+            }));
+          } else {
+            await this.setState(prevState => ({
+              listOfFailedCommands: prevState.listOfFailedCommands.concat(
+                command,
+              ),
+            }));
+          }
+        }
       }
     }
     this.setState({
       command: '',
     });
   }
+
+  onInputKeyDown(keyCode) {
+    if (keyCode === 13) {
+      this.onAddCommand();
+    }
+  }
+
+  reportRobotLocation() {
+    console.log('hello');
+  }
+
   render() {
     const { command, listOfValidCommands, listOfFailedCommands } = this.state;
     return (
@@ -85,6 +142,7 @@ export class HomePage extends React.Component {
             }}
             value={command}
             onChange={this.onChange}
+            onKeyDown={e => this.onInputKeyDown(e.keyCode)}
           />
           <span style={{ marginLeft: '2rem' }}>
             <Button
@@ -145,18 +203,28 @@ export class HomePage extends React.Component {
               </Card>
             </Grid>
           </div>
-          <Button color="primary" variant="contained">
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={this.reportRobotLocation}
+          >
             Report
           </Button>
           <TextField
             id="outlined-name"
-            label="Output"
+            // label="Output"
             // className={classes.textField}
             // value={this.state.name}
             // onChange={this.handleChange('name')}
             margin="normal"
             variant="outlined"
-            disabled
+            value={
+              this.state.currPos
+                ? `${this.state.currPos.x} +
+                  ${this.state.currPos.y} +
+                  ${degreeToDirection(this.state.currPos.facing)}`
+                : null
+            }
           />
           <TextField
             id="outlined-textarea"
