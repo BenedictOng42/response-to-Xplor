@@ -144,6 +144,7 @@
     ]
   },
   "dependencies": {
+    "@material-ui/core": "^3.2.2",
     "babel-polyfill": "6.26.0",
     "chalk": "2.4.1",
     "compression": "1.7.2",
@@ -173,6 +174,7 @@
     "reselect": "3.0.1",
     "sanitize.css": "4.1.0",
     "styled-components": "3.3.2",
+    "uuid": "^3.3.2",
     "warning": "4.0.1",
     "whatwg-fetch": "2.0.4"
   },

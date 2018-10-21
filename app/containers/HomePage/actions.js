@@ -4,10 +4,14 @@
  *
  */
 
-import { DEFAULT_ACTION } from './constants';
+import { VALIDATE_COMMAND } from './constants';
 
-export function defaultAction() {
+export function validateAndAddCommand(command) {
+  if (command) {
+    console.log(command);
+  }
   return {
-    type: DEFAULT_ACTION,
+    type: VALIDATE_COMMAND,
+    command,
   };
 }
