@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<HomePage /> should render correctly 1`] = `
+<div>
+  <InputWrapper>
+    <WithStyles(Input)
+      inputProps={
+        Object {
+          "aria-label": "Description",
+        }
+      }
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Input Command"
+      value=""
+    />
+    <InputButtonWrapper>
+      <WithStyles(Button)
+        color="primary"
+        onClick={[Function]}
+        variant="contained"
+      >
+        Add Command
+      </WithStyles(Button)>
+    </InputButtonWrapper>
+  </InputWrapper>
+  <CommandWrapper>
+    <WithStyles(Grid)
+      alignItems="stretch"
+      container={true}
+      justify="space-evenly"
+      spacing={16}
+    >
+      <CardWrapper>
+        <WithStyles(CardContent)>
+          <WithStyles(Typography)
+            color="textPrimary"
+            gutterBottom={true}
+          >
+            Valid Commands
+          </WithStyles(Typography)>
+        </WithStyles(CardContent)>
+      </CardWrapper>
+      <CardWrapper>
+        <WithStyles(CardContent)>
+          <WithStyles(Typography)
+            color="textPrimary"
+            gutterBottom={true}
+          >
+            Failed Commands
+          </WithStyles(Typography)>
+        </WithStyles(CardContent)>
+      </CardWrapper>
+    </WithStyles(Grid)>
+    <h3>
+      Output Result
+    </h3>
+    <TextField
+      disabled={true}
+      id="outlined-name"
+      margin="normal"
+      required={false}
+      select={false}
+      value="Must use a valid REPORT command"
+      variant="outlined"
+    />
+    <TextField
+      disabled={true}
+      id="outlined-textarea"
+      label="Output History"
+      margin="normal"
+      multiline={true}
+      placeholder="Placeholder"
+      required={false}
+      select={false}
+      variant="outlined"
+    />
+  </CommandWrapper>
+</div>
+`;

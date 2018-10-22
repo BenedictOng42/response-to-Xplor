@@ -4,14 +4,11 @@
  *
  */
 
-import { VALIDATE_COMMAND } from './constants';
+import { ADD_OUTPUT } from './constants';
 
-export function validateAndAddCommand(command) {
-  if (command) {
-    console.log(command);
-  }
+export function addToOutputHistory(output) {
   return {
-    type: VALIDATE_COMMAND,
-    command,
+    type: ADD_OUTPUT,
+    output,
   };
 }

@@ -81,11 +81,8 @@ function moveRobot(currPos, move) {
     newPos.facing = currPos.facing - 90;
   }
   if (newPos.x < 0 || newPos.y < 0 || newPos.x > 5 || newPos.y > 5) {
-    console.log('hello');
     newPos.valid = false;
   } else {
-    console.log('there');
-
     newPos.valid = true;
   }
   return newPos;

@@ -5,14 +5,19 @@
  */
 
 import { fromJS } from 'immutable';
-import { DEFAULT_ACTION } from './constants';
+import { ADD_OUTPUT } from './constants';
 
-export const initialState = fromJS({});
+export const initialState = fromJS({
+  outputHistory: fromJS([]),
+});
 
 function homePageReducer(state = initialState, action) {
   switch (action.type) {
-    case DEFAULT_ACTION:
-      return state;
+    case ADD_OUTPUT:
+      return state.set(
+        'outputHistory',
+        fromJS(state.get('outputHistory').push(action.output)),
+      );
     default:
       return state;
   }

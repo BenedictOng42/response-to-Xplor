@@ -4,5 +4,4 @@
  *
  */
 
-export const VALIDATE_COMMAND = 'app/HomePage/VALIDATE_COMMAND';
-export const INVALID_COMMAND = 'app/HomePage/INVALID_COMMAND';
+export const ADD_OUTPUT = 'app/HomePage/ADD_OUTPUT';

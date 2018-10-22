@@ -5,26 +5,32 @@
  */
 
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
-import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+
 import v4 from 'uuid/v4';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import makeSelectHomePage from './selectors';
+import { makeSelectOutputHistory } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import { addToOutputHistory } from './actions';
 import { moveRobot, isValidMove, degreeToDirection } from './movements';
-/* eslint-disable react/prefer-stateless-function */
-export class HomePage extends React.Component {
+import InputWrapper from './Wrappers/InputWrapper';
+import InputButtonWrapper from './Wrappers/InputButtonWrapper';
+import CommandWrapper from './Wrappers/CommandWrapper';
+import CardWrapper from './Wrappers/CardWrapper';
+
+export class HomePage extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,11 +39,13 @@ export class HomePage extends React.Component {
       listOfFailedCommands: [],
       ableToAcceptCommands: false,
       currPos: null,
+      showOutput: false,
     };
     this.onChange = this.onChange.bind(this);
     this.onAddCommand = this.onAddCommand.bind(this);
     this.onInputKeyDown = this.onInputKeyDown.bind(this);
-    this.reportRobotLocation = this.reportRobotLocation.bind(this);
+    this.createStyledCommandList = this.createStyledCommandList.bind(this);
+    this.createStyledOutputList = this.createStyledOutputList.bind(this);
   }
 
   onChange(event) {
@@ -46,8 +54,9 @@ export class HomePage extends React.Component {
   }
 
   async onAddCommand() {
-    const { ableToAcceptCommands, command } = this.state;
+    const { ableToAcceptCommands, command, currPos } = this.state;
     const commandBreakdown = command.split([' ']);
+    await this.setState({ showOutput: false });
     if (!isValidMove(commandBreakdown)) {
       await this.setState(prevState => ({
         listOfFailedCommands: prevState.listOfFailedCommands.concat(command),
@@ -79,10 +88,21 @@ export class HomePage extends React.Component {
       }
       if (ableToAcceptCommands) {
         if (commandBreakdown[0].toLowerCase() === 'report') {
-          await this.setState(prevState => ({
+          this.props.addToOutputHistory(
+            this.state.listOfValidCommands
+              .concat(command)
+              .concat(
+                `${currPos.x},${currPos.y},${degreeToDirection(
+                  currPos.facing,
+                )}`,
+              ),
+          );
+          await this.setState({
             ableToAcceptCommands: false,
-            listOfValidCommands: prevState.listOfValidCommands.concat(command),
-          }));
+            listOfValidCommands: [],
+            listOfFailedCommands: [],
+            showOutput: true,
+          });
         } else {
           let newPos;
           if (commandBreakdown[0].toLowerCase() === 'place') {
@@ -126,15 +146,38 @@ export class HomePage extends React.Component {
     }
   }
 
-  reportRobotLocation() {
-    console.log('hello');
+  createStyledCommandList(list) {
+    const styledList = list.map(value => (
+      <Typography gutterBottom key={v4()}>
+        {value}
+      </Typography>
+    ));
+    return styledList;
+  }
+
+  createStyledOutputList(list) {
+    const styledList = list.map(value => (
+      <Typography gutterBottom key={v4()}>
+        {value.map(item => ` --> ${item.toUpperCase()}`)}
+      </Typography>
+    ));
+    return styledList;
   }
 
   render() {
-    const { command, listOfValidCommands, listOfFailedCommands } = this.state;
+    const {
+      command,
+      listOfValidCommands,
+      listOfFailedCommands,
+      currPos,
+    } = this.state;
+
+    const failedCommands = this.createStyledCommandList(listOfFailedCommands);
+    const validCommands = this.createStyledCommandList(listOfValidCommands);
+    const outputHistory = this.createStyledOutputList(this.props.outputHistory);
     return (
       <div>
-        <div style={{ marginBottom: '3rem', textAlign: 'center' }}>
+        <InputWrapper>
           <Input
             placeholder="Input Command"
             inputProps={{
@@ -144,7 +187,7 @@ export class HomePage extends React.Component {
             onChange={this.onChange}
             onKeyDown={e => this.onInputKeyDown(e.keyCode)}
           />
-          <span style={{ marginLeft: '2rem' }}>
+          <InputButtonWrapper>
             <Button
               color="primary"
               variant="contained"
@@ -152,105 +195,71 @@ export class HomePage extends React.Component {
             >
               Add Command
             </Button>
-          </span>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            textAlign: 'center',
-            marginBottom: '3rem',
-          }}
-        >
-          <div style={{ marginBottom: '3rem' }}>
-            <Grid
-              container
-              spacing={16}
-              justify="space-evenly"
-              alignItems="stretch"
-            >
-              <Card style={{ width: '20rem' }}>
-                <CardContent>
-                  <Typography
-                    // className={classes.ti/tle}
-                    color="textPrimary"
-                    gutterBottom
-                  >
-                    Valid Commands
-                  </Typography>
-                  {listOfValidCommands.map(value => (
-                    <Typography gutterBottom key={v4()}>
-                      {value}
-                    </Typography>
-                  ))}
-                </CardContent>
-              </Card>
-              <Card style={{ width: '20rem' }}>
-                <CardContent>
-                  <Typography
-                    // className={classes.ti/tle}
-                    color="textPrimary"
-                    gutterBottom
-                  >
-                    Failed Commands
-                  </Typography>
-                  {listOfFailedCommands.map(value => (
-                    <Typography gutterBottom key={v4()}>
-                      {value}
-                    </Typography>
-                  ))}
-                </CardContent>
-              </Card>
-            </Grid>
-          </div>
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={this.reportRobotLocation}
+          </InputButtonWrapper>
+        </InputWrapper>
+        <CommandWrapper>
+          <Grid
+            container
+            spacing={16}
+            justify="space-evenly"
+            alignItems="stretch"
           >
-            Report
-          </Button>
+            <CardWrapper>
+              <CardContent>
+                <Typography color="textPrimary" gutterBottom>
+                  <b>Valid Commands</b>
+                </Typography>
+                {validCommands}
+              </CardContent>
+            </CardWrapper>
+            <CardWrapper>
+              <CardContent>
+                <Typography color="textPrimary" gutterBottom>
+                  <b>Failed Commands</b>
+                </Typography>
+                {failedCommands}
+              </CardContent>
+            </CardWrapper>
+          </Grid>
+          <h3>Output Result</h3>
           <TextField
             id="outlined-name"
-            // label="Output"
-            // className={classes.textField}
-            // value={this.state.name}
-            // onChange={this.handleChange('name')}
             margin="normal"
             variant="outlined"
             value={
-              this.state.currPos
-                ? `${this.state.currPos.x} +
-                  ${this.state.currPos.y} +
-                  ${degreeToDirection(this.state.currPos.facing)}`
-                : null
+              this.state.currPos && this.state.showOutput
+                ? `${currPos.x},${currPos.y},${degreeToDirection(currPos.facing)}` /* eslint-disable-line */
+                : 'Must use a valid REPORT command'
             }
-          />
-          <TextField
-            id="outlined-textarea"
-            label="Output History"
-            placeholder="Placeholder"
-            multiline
-            // className={classes.textField}
-            margin="normal"
-            variant="outlined"
-            // value={this.state.coorindates}
             disabled
           />
-        </div>
+          <Card>
+            <CardContent>
+              <Typography color="textPrimary" gutterBottom>
+                <b>Output History</b>
+              </Typography>
+              {outputHistory}
+            </CardContent>
+          </Card>
+        </CommandWrapper>
       </div>
     );
   }
 }
 
-HomePage.propTypes = {};
+HomePage.propTypes = {
+  addToOutputHistory: PropTypes.func.isRequired,
+  outputHistory: PropTypes.array.isRequired,
+};
 
 const mapStateToProps = createStructuredSelector({
-  homepage: makeSelectHomePage(),
+  outputHistory: makeSelectOutputHistory(),
 });
 
-function mapDispatchToProps() {
-  return {};
+function mapDispatchToProps(dispatch) {
+  return {
+    addToOutputHistory: output => dispatch(addToOutputHistory(output)),
+  };
 }
 
 const withConnect = connect(
