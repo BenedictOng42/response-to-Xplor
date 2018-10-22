@@ -49,6 +49,7 @@ export class HomePage extends React.PureComponent {
   }
 
   onChange(event) {
+    this.setState({ showOutput: false });
     const command = event.target.value;
     this.setState({ command });
   }
@@ -56,7 +57,6 @@ export class HomePage extends React.PureComponent {
   async onAddCommand() {
     const { ableToAcceptCommands, command, currPos } = this.state;
     const commandBreakdown = command.split([' ']);
-    await this.setState({ showOutput: false });
     if (!isValidMove(commandBreakdown)) {
       await this.setState(prevState => ({
         listOfFailedCommands: prevState.listOfFailedCommands.concat(command),
@@ -226,12 +226,13 @@ export class HomePage extends React.PureComponent {
             id="outlined-name"
             margin="normal"
             variant="outlined"
+            style={{ color: 'black' }}
             value={
               this.state.currPos && this.state.showOutput
                 ? `${currPos.x},${currPos.y},${degreeToDirection(currPos.facing)}` /* eslint-disable-line */
                 : 'Must use a valid REPORT command'
             }
-            disabled
+            readOnly
           />
           <Card>
             <CardContent>
