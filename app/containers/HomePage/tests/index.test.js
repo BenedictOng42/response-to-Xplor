@@ -1,10 +1,15 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
 import { HomePage } from '../index';
 
+jest.mock('uuid/v4', () => jest.fn(() => 1));
+
 describe('<HomePage />', () => {
-  const wrapper = shallow(<HomePage />);
+  const props = {
+    outputHistory: [['output']],
+    addToOutputHistory: jest.fn(),
+  };
+  const wrapper = shallow(<HomePage {...props} />);
   it('should render correctly', () => {
     expect(wrapper).toMatchSnapshot();
   });

@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
+
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
@@ -16,15 +17,17 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
-
 import v4 from 'uuid/v4';
+
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import { makeSelectOutputHistory } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import { addToOutputHistory } from './actions';
+
 import { moveRobot, isValidMove, degreeToDirection } from './movements';
+
 import InputWrapper from './Wrappers/InputWrapper';
 import InputButtonWrapper from './Wrappers/InputButtonWrapper';
 import CommandWrapper from './Wrappers/CommandWrapper';

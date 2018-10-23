@@ -26,7 +26,7 @@ function degreeToDirection(degree) {
       reducedDegree -= 360;
     }
   } else {
-    while (reducedDegree + 360 <= 0) {
+    while (reducedDegree + 360 <= 360) {
       reducedDegree += 360;
     }
   }
@@ -73,14 +73,20 @@ function moveRobot(currPos, move) {
     newPos.y = currPos.y + Math.round(Math.sin(toRadians(currPos.facing)));
   }
   // LEFT
-  else if (move.toUpperCase() === MOVEMENTS[1]) {
+  if (move.toUpperCase() === MOVEMENTS[1]) {
     newPos.facing = currPos.facing + 90;
   }
   // RIGHT
-  else if (move.toUpperCase() === MOVEMENTS[2]) {
+  if (move.toUpperCase() === MOVEMENTS[2]) {
     newPos.facing = currPos.facing - 90;
   }
-  if (newPos.x < 0 || newPos.y < 0 || newPos.x > 5 || newPos.y > 5) {
+  if (
+    newPos.x < 0 ||
+    newPos.y < 0 ||
+    newPos.x > 5 ||
+    newPos.y > 5 ||
+    (!MOVEMENTS.includes(move.toUpperCase()) && move.toUpperCase() !== 'NONE')
+  ) {
     newPos.valid = false;
   } else {
     newPos.valid = true;

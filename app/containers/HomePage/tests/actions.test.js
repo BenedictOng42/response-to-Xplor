@@ -1,13 +1,15 @@
-import { defaultAction } from '../actions';
-import { DEFAULT_ACTION } from '../constants';
+import { addToOutputHistory } from '../actions';
+import { ADD_OUTPUT } from '../constants';
 
 describe('HomePage actions', () => {
-  describe('Default Action', () => {
-    it('has a type of DEFAULT_ACTION', () => {
+  describe('addToOutputHistory Action', () => {
+    it('has the correct type and passes output', () => {
+      const output = 'output';
       const expected = {
-        type: DEFAULT_ACTION,
+        type: ADD_OUTPUT,
+        output,
       };
-      expect(defaultAction()).toEqual(expected);
+      expect(addToOutputHistory(output)).toEqual(expected);
     });
   });
 });

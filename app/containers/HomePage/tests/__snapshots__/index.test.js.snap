@@ -37,7 +37,9 @@ exports[`<HomePage /> should render correctly 1`] = `
             color="textPrimary"
             gutterBottom={true}
           >
-            Valid Commands
+            <b>
+              Valid Commands
+            </b>
           </WithStyles(Typography)>
         </WithStyles(CardContent)>
       </CardWrapper>
@@ -47,7 +49,9 @@ exports[`<HomePage /> should render correctly 1`] = `
             color="textPrimary"
             gutterBottom={true}
           >
-            Failed Commands
+            <b>
+              Failed Commands
+            </b>
           </WithStyles(Typography)>
         </WithStyles(CardContent)>
       </CardWrapper>
@@ -56,25 +60,37 @@ exports[`<HomePage /> should render correctly 1`] = `
       Output Result
     </h3>
     <TextField
-      disabled={true}
       id="outlined-name"
       margin="normal"
+      readOnly={true}
       required={false}
       select={false}
+      style={
+        Object {
+          "color": "black",
+        }
+      }
       value="Must use a valid REPORT command"
       variant="outlined"
     />
-    <TextField
-      disabled={true}
-      id="outlined-textarea"
-      label="Output History"
-      margin="normal"
-      multiline={true}
-      placeholder="Placeholder"
-      required={false}
-      select={false}
-      variant="outlined"
-    />
+    <WithStyles(Card)>
+      <WithStyles(CardContent)>
+        <WithStyles(Typography)
+          color="textPrimary"
+          gutterBottom={true}
+        >
+          <b>
+            Output History
+          </b>
+        </WithStyles(Typography)>
+        <WithStyles(Typography)
+          gutterBottom={true}
+          key="1"
+        >
+           --&gt; OUTPUT
+        </WithStyles(Typography)>
+      </WithStyles(CardContent)>
+    </WithStyles(Card)>
   </CommandWrapper>
 </div>
 `;
