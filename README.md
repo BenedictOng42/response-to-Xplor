@@ -1,6 +1,17 @@
 Toy Robot Simulator
 ===================
 
+Commands to run
+--------------
+  To install necessary packages
+  1. yarn install
+
+  To run application 
+  1. yarn start
+
+  To run tests
+  1. yarn test
+
 Description
 -----------
 
@@ -20,7 +31,7 @@ How to Function
     5. REPORT
 
     Note: There is NO space between the commas.
-    
+
   - It will accept non capitalised versions of the command too such as:
     place 1,2,north
   - To accept a command which has been typed in the input box, simply press the "Enter" key or click the "ADD COMMAND" button.
