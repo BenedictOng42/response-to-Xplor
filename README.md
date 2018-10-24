@@ -4,13 +4,13 @@ Toy Robot Simulator
 Commands to run
 --------------
   To install necessary packages
-  1. yarn install
+    yarn install
 
   To run application 
-  1. yarn start
+    yarn start
 
   To run tests
-  1. yarn test
+    yarn test
 
 Description
 -----------
